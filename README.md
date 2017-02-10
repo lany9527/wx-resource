@@ -1,21 +1,22 @@
 # 微信小程序webSocket模拟http请求
  
- # 使用
+# 使用
  
- ## 安装
+## 安装
  
 ````bash
     npm install wx-resource
 ````
 
 ## 用法示例
-
 ```javascript
-import Ws from 'wx-resource'
+// token为 非必传参数
+// 需要服务器配合解析由websocket 传过去的data
+import WxResource from 'wx-resource'
  
- const ws = new Ws("ws://...");
+ const wxResource = new WxResource("ws://..."); //websocket 地址
  
- ws.get(
+ wxResource.get(
        {
          url: 'http://...'
        },
@@ -23,8 +24,10 @@ import Ws from 'wx-resource'
      ).then(function (res) {
        // ...
      });
+ ````
  
- ws.post(
+ ```javascript
+ wxResource.post(
         {
           url: 'http://...',
           data: {
@@ -36,8 +39,9 @@ import Ws from 'wx-resource'
       ).then(function (res) {
         // ...
       });
- 
- ws.delete(
+```
+```javascript
+ wxResource.delete(
         {
           url: 'http://...',
           data: {
@@ -49,8 +53,10 @@ import Ws from 'wx-resource'
       ).then(function (res) {
         // ...
       });
+ ```
  
- ws.update(
+ ```javascript
+ wxResource.update(
          {
            url: 'http://...',
            data: {
