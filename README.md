@@ -1,7 +1,9 @@
-"# 微信小程序webSocket模拟http请求"
+# 微信小程序webSocket模拟http请求
  
- ```
- import Ws from
+ ## 使用：
+
+```javascript
+import Ws from //.....
  
  const ws = new Ws("ws://192.168.8.138/api/ws");
  
@@ -11,7 +13,7 @@
        },
        token
      ).then(function (res) {
-       console.log(res);
-       data = res;
+       // ...
      });
- ```
+
+```
