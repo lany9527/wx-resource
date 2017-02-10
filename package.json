@@ -1,15 +1,15 @@
 {
-  "name": "@lany/wxResource",
+  "name": "wx-resource",
   "version": "1.0.0",
-  "description": "\"# wxResource\"",
-  "main": "dist/wxResource.js",
+  "description": "\"# wx-resource\"",
+  "main": "dist/wx-resource.js",
   "scripts": {
     "build": "webpack --display-error-details --progress --colors",
     "watch": "webpack --display-error-details --progress --colors --watch"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lany9527/wxResource.git"
+    "url": "https://github.com/lany9527/wx-resource.git"
   },
   "keywords": [
     "websocket",
@@ -27,7 +27,6 @@
     "webpack": "v2.2.0-rc.5"
   },
   "bugs": {
-    "url": "https://github.com/lany9527/wxResource/issues"
-  },
-  "homepage": "https://github.com/lany9527/wxResource#readme"
+    "url": "https://github.com/lany9527/wx-resource/issues"
+  }
 }

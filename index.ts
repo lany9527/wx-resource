@@ -1,81 +1,118 @@
 import {Promise} from 'es6-promise';
-
 declare const wx: any;
 
 interface ReqObj {
-  url: string,
-  data?: any
+  url: string;
+  data: any;
 }
-var Ws = (function () {
-  function Ws(wsUrl) {
-    wx.connectSocket({
-      url: wsUrl,
-    });
+class WxResource {
+  constructor(private wsUrl: string, private reqObj: ReqObj) {
+    this.connect();
   }
 
-  Ws.prototype.get = (reqObj:ReqObj, token:string) => {
-    return new Promise((resolve, reject) => {
-      wx.onSocketOpen(function (res) {
-        console.log('WebSocket连接已打开！', res);
-        sendMsg(reqObj, "GET", token);
-      });
-      receiveMsg(resolve);
-      handleError(reject);
-      closeWs();
+  /**
+   * 连接webSocket
+   * @returns {WxResource}
+   */
+  public connect(): WxResource {
+    wx.connectSocket({
+      url: this.wsUrl
     });
-
-  };
-  Ws.prototype.post = (reqObj:ReqObj, token:string) => {
-    return new Promise((resolve, reject) => {
-      wx.onSocketOpen(function (res) {
-        console.log('WebSocket连接已打开！', res);
-        sendMsg(reqObj, "POST", token);
-      });
-      receiveMsg(resolve);
-      handleError(reject);
-      closeWs();
-    })
-  };
-  Ws.prototype.delete = (reqObj:ReqObj, token:string) => {
-    return new Promise((resolve, reject) => {
-      wx.onSocketOpen(function (res) {
-        console.log('WebSocket连接已打开！', res);
-        sendMsg(reqObj, "DELETE", token);
-      });
-      receiveMsg(resolve);
-      handleError(reject);
-      closeWs();
-    })
-  };
-  Ws.prototype.update = (reqObj:ReqObj, token:string) => {
-    return new Promise((resolve, reject) => {
-      wx.onSocketOpen(function (res) {
-        console.log('WebSocket连接已打开！', res);
-        sendMsg(reqObj, "UPDATE", token);
-      });
-      receiveMsg(resolve);
-      handleError(reject);
-      closeWs();
-    })
-  };
+    return this;
+  }
 
   /**
-   * 用于处理发送信息
-   * @param reqObj  请求数据
-   * @param token   get方法需要用到的token
-   * @param method  请求方法
+   * get 方法
+   * @param reqObj  传入的请求对象
+   * @param token   传入的token【非必传参数】
+   * @returns {Promise}
    */
-  function sendMsg(reqObj:ReqObj, method: string, token?: string) {
+  public get(reqObj: ReqObj, token?: string): Promise<any> {
+    let _that = this;
+    return new Promise((resolve, reject) => {
+      wx.onSocketOpen(function (res) {
+        console.log('WebSocket connection has been opened!', res);
+        _that.sendMsg(reqObj, "GET", token);
+      });
+      this.receiveMsg(resolve);
+      this.handleError(reject);
+    })
+  }
+
+  /**
+   * post 方法
+   * @param reqObj  传入的请求对象
+   * @param token   传入的token【非必传参数】
+   * @returns {Promise}
+   */
+  public post(reqObj: ReqObj, token?: string): Promise<any> {
+    let _that = this;
+    return new Promise((resolve, reject) => {
+      wx.onSocketOpen(function (res) {
+        console.log('WebSocket connection has been opened!', res);
+        _that.sendMsg(reqObj, "POST");
+      });
+      this.receiveMsg(resolve);
+
+      this.handleError(reject);
+    })
+  }
+
+  /**
+   * delete 方法
+   * @param reqObj   传入的请求对象
+   * @param token    传入的token【非必传参数】
+   * @returns {Promise}
+   */
+  public delete(reqObj: ReqObj, token?: string): Promise<any> {
+    let _that = this;
+    return new Promise((resolve, reject) => {
+      wx.onSocketOpen(function (res) {
+        console.log('WebSocket connection has been opened!', res);
+        _that.sendMsg(reqObj, "DELETE");
+      });
+      this.receiveMsg(resolve);
+
+      this.handleError(reject);
+    })
+  }
+
+  /**
+   * update 方法
+   * @param reqObj   传入的请求对象
+   * @param token    传入的token【非必传参数】
+   * @returns {Promise}
+   */
+  public update(reqObj: ReqObj, token?: string): Promise<any> {
+    let _that = this;
+    return new Promise((resolve, reject) => {
+      wx.onSocketOpen(function (res) {
+        console.log('WebSocket connection has been opened!', res);
+        _that.sendMsg(reqObj, "UPDATE");
+      });
+      this.receiveMsg(resolve);
+
+      this.handleError(reject);
+    })
+  }
+
+  /**
+   * 处理webSocket发送的信息
+   * @param reqObj
+   * @param method  请求方法 GET  POST ...
+   * @param token
+   */
+  private sendMsg(reqObj: ReqObj, method: string, token?: string) {
 
     // 判断是否传入token
     let header = {};
     if (token === undefined) {
-      console.log("token没有传入");
+      console.log("no token");
       header = {
         "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6)
       }
     } else if (token !== undefined) {
-      console.log("传入token");
+      console.log("get token");
       header = {
         "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6),
         "Authentication": "Bearer " + token
@@ -94,11 +131,11 @@ var Ws = (function () {
       fail: function (res) {
         console.log("发送失败", res)
       }
-    })
+    });
   }
 
-  // 显示错误信息
-  function handleError(reject) {
+  // 处理错误信息
+  handleError(reject) {
     wx.onSocketError(function (res) {
       reject(res);
       console.log(res, 'WebSocket连接打开失败，请检查！')
@@ -106,21 +143,12 @@ var Ws = (function () {
   }
 
   // 处理服务器返回内容
-  function receiveMsg(resolve) {
+  receiveMsg(resolve) {
     wx.onSocketMessage(function (res) {
       resolve(JSON.parse(res.data));
-      // console.log(JSON.parse(res.data));
     });
   }
 
-  // 关闭websocket
-  function closeWs() {
-    wx.onSocketClose(function (res) {
-      console.log('WebSocket 已关闭！')
-    })
-  }
+}
 
-  return Ws
-}());
-export default Ws;
-
+export default WxResource;
