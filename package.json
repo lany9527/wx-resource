@@ -1,7 +1,7 @@
 {
   "name": "wxResource",
   "version": "1.0.0",
-  "description": "\"# wx-websocket\"",
+  "description": "\"# wxResource\"",
   "main": "dist/wxResource.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,7 +23,7 @@
     "webpack": "v2.2.0-rc.5"
   },
   "bugs": {
-    "url": "https://github.com/lany9527/wx-websocket/issues"
+    "url": "https://github.com/lany9527/wxResource/issues"
   },
-  "homepage": "https://github.com/lany9527/wx-websocket#readme"
+  "homepage": "https://github.com/lany9527/wxResource#readme"
 }
