@@ -1,6 +1,6 @@
 {
   "name": "wx-resource",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "\"# wx-resource\"",
   "main": "dist/wx-resource.js",
   "scripts": {
