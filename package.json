@@ -1,0 +1,29 @@
+{
+  "name": "wxResource",
+  "version": "1.0.0",
+  "description": "\"# wx-websocket\"",
+  "main": "dist/wxResource.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lany9527/wxResource.git"
+  },
+  "keywords": [
+    "websocket",
+    "weChat",
+    "app"
+  ],
+  "author": "lany9527",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-loader": "^1.3.3",
+    "typescript": "^2.1.5",
+    "webpack": "v2.2.0-rc.5"
+  },
+  "bugs": {
+    "url": "https://github.com/lany9527/wx-websocket/issues"
+  },
+  "homepage": "https://github.com/lany9527/wx-websocket#readme"
+}
