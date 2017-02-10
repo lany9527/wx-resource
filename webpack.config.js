@@ -3,8 +3,8 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    "wxResource": path.join(__dirname, 'index.ts'),
-    "wxResource.min": path.join(__dirname, 'index.ts')
+    "wx-resource": path.join(__dirname, 'index.ts'),
+    "wx-resource.min": path.join(__dirname, 'index.ts')
   },
   output: {
     path: path.join(__dirname, '/dist'),
