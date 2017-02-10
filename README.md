@@ -3,17 +3,55 @@
  ## 使用：
 
 ```javascript
-import Ws from //.....
+import Ws from 'wx-resource'
  
- const ws = new Ws("ws://192.168.8.138/api/ws");
+ const ws = new Ws("ws://...");
  
  ws.get(
        {
-         url: 'http://192.168.8.138/api/v1/user/auth/status'
+         url: 'http://...'
        },
        token
      ).then(function (res) {
        // ...
      });
-
+ 
+ ws.post(
+        {
+          url: 'http://...',
+          data: {
+            x: y,
+            y: y
+          }
+        },
+        token
+      ).then(function (res) {
+        // ...
+      });
+ 
+ ws.delete(
+        {
+          url: 'http://...',
+          data: {
+            x: y,
+            y: y
+          }
+        },
+        token
+      ).then(function (res) {
+        // ...
+      });
+ 
+ ws.update(
+         {
+           url: 'http://...',
+           data: {
+             x: y,
+             y: y
+           }
+         },
+         token
+       ).then(function (res) {
+         // ...
+       });
 ```
