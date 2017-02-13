@@ -42,12 +42,12 @@ class WxResource {
    * @param token   传入的token【非必传参数】
    * @returns {Promise}
    */
-  public get(reqObj: ReqObj, token?: string): Promise<any> {
+  public get(requrl:string,reqObj: ReqObj, token?: string): Promise<any> {
     let _that = this;
     return new Promise((resolve, reject) => {
       wx.onSocketOpen(function (res) {
         console.log('WebSocket connection has been opened!', res);
-        _that.sendMsg(reqObj, "GET", token);
+        _that.sendMsg(requrl,reqObj, "GET", token);
       });
       this.receiveMsg(resolve);
       this.handleError(reject);
@@ -61,12 +61,12 @@ class WxResource {
    * @param token   传入的token【非必传参数】
    * @returns {Promise}
    */
-  public post(reqObj: ReqObj, token?: string): Promise<any> {
+  public post(requrl:string,reqObj: ReqObj, token?: string): Promise<any> {
     let _that = this;
     return new Promise((resolve, reject) => {
       wx.onSocketOpen(function (res) {
         console.log('WebSocket connection has been opened!', res);
-        _that.sendMsg(reqObj, "POST", resolve);
+        _that.sendMsg(requrl,reqObj, "POST", resolve);
       });
       this.handleError(reject);
       this.handleSocketClose(reject)
@@ -79,12 +79,12 @@ class WxResource {
    * @param token    传入的token【非必传参数】
    * @returns {Promise}
    */
-  public delete(reqObj: ReqObj, token?: string): Promise<any> {
+  public delete(requrl:string,reqObj: ReqObj, token?: string): Promise<any> {
     let _that = this;
     return new Promise((resolve, reject) => {
       wx.onSocketOpen(function (res) {
         console.log('WebSocket connection has been opened!', res);
-        _that.sendMsg(reqObj, "DELETE", resolve);
+        _that.sendMsg(requrl, reqObj, "DELETE", resolve);
       });
       this.receiveMsg(resolve);
 
@@ -98,12 +98,12 @@ class WxResource {
    * @param token    传入的token【非必传参数】
    * @returns {Promise}
    */
-  public update(reqObj: ReqObj, token?: string): Promise<any> {
+  public update(requrl: string,reqObj: ReqObj, token?: string): Promise<any> {
     let _that = this;
     return new Promise((resolve, reject) => {
       wx.onSocketOpen(function (res) {
         console.log('WebSocket connection has been opened!', res);
-        _that.sendMsg(reqObj, "UPDATE", resolve);
+        _that.sendMsg(requrl,reqObj, "UPDATE", resolve);
       });
       this.receiveMsg(resolve);
 
@@ -117,7 +117,7 @@ class WxResource {
    * @param method  请求方法 GET  POST ...
    * @param token
    */
-  private sendMsg(reqObj: ReqObj, method: string, resolve, token?: string) {
+  private sendMsg(requrl:string,reqObj: ReqObj, method: string, resolve, token?: string) {
     // 判断是否传入token
     let header = {};
     if (token === undefined) {
@@ -135,7 +135,7 @@ class WxResource {
     wx.sendSocketMessage({
       data: JSON.stringify({
         "method": method,
-        "url": reqObj.url,
+        "url": requrl,
         "header": header,
         "body": JSON.stringify(reqObj.data)
       }),

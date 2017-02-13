@@ -17,9 +17,7 @@ import WxResource from 'wx-resource'
  const wxResource = new WxResource("ws://..."); //websocket 地址
  
  wxResource.get(
-       {
-         url: 'http://...'
-       },
+       'http://...',
        token
      ).then(function (res) {
        // ...
@@ -28,8 +26,8 @@ import WxResource from 'wx-resource'
  
  ```javascript
  wxResource.post(
-        {
-          url: 'http://...',
+        'http://...',
+        {          
           data: {
             x: y,
             y: y
@@ -42,8 +40,8 @@ import WxResource from 'wx-resource'
 ```
 ```javascript
  wxResource.delete(
+        'http://...',
         {
-          url: 'http://...',
           data: {
             x: y,
             y: y
@@ -57,8 +55,8 @@ import WxResource from 'wx-resource'
  
  ```javascript
  wxResource.update(
+         'http://...',
          {
-           url: 'http://...',
            data: {
              x: y,
              y: y
