@@ -1463,145 +1463,133 @@ module.exports = g;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/**
+ * Created by littlestone on 2017/2/10.
+ */
 
 var es6_promise_1 = __webpack_require__(0);
 var WxResource = (function () {
-    function WxResource(wsUrl, reqObj) {
-        this.wsUrl = wsUrl;
-        this.reqObj = reqObj;
+    function WxResource() {
+        this.socketOpen = false;
         this.connect();
+        this.listen();
+        this.afterConnect();
     }
-    /**
-     * 连接webSocket
-     * @returns {WxResource}
-     */
+    WxResource.prototype.listen = function () {
+        var _this = this;
+        return new es6_promise_1.Promise(function (resolve, reject) {
+            wx.onSocketOpen(function (event) {
+                _this.socketOpen = true;
+                console.log('WebSocket opened：', event);
+                resolve(event);
+            });
+            wx.onSocketError(function (event) {
+                console.error('Can not open WebSocket, please check...！', event);
+                resolve(event);
+            });
+        });
+    };
     WxResource.prototype.connect = function () {
         wx.connectSocket({
-            url: this.wsUrl
+            url: "ws://192.168.8.138/api/ws"
         });
         return this;
     };
-    /**
-     * get 方法
-     * @param reqObj  传入的请求对象
-     * @param token   传入的token【非必传参数】
-     * @returns {Promise}
-     */
-    WxResource.prototype.get = function (reqObj, token) {
-        var _this = this;
-        var _that = this;
-        return new es6_promise_1.Promise(function (resolve, reject) {
-            wx.onSocketOpen(function (res) {
-                console.log('WebSocket connection has been opened!', res);
-                _that.sendMsg(reqObj, "GET", token);
-            });
-            _this.receiveMsg(resolve);
-            _this.handleError(reject);
-        });
-    };
-    /**
-     * post 方法
-     * @param reqObj  传入的请求对象
-     * @param token   传入的token【非必传参数】
-     * @returns {Promise}
-     */
-    WxResource.prototype.post = function (reqObj, token) {
-        var _this = this;
-        var _that = this;
-        return new es6_promise_1.Promise(function (resolve, reject) {
-            wx.onSocketOpen(function (res) {
-                console.log('WebSocket connection has been opened!', res);
-                _that.sendMsg(reqObj, "POST");
-            });
-            _this.receiveMsg(resolve);
-            _this.handleError(reject);
-        });
-    };
-    /**
-     * delete 方法
-     * @param reqObj   传入的请求对象
-     * @param token    传入的token【非必传参数】
-     * @returns {Promise}
-     */
-    WxResource.prototype.delete = function (reqObj, token) {
-        var _this = this;
-        var _that = this;
-        return new es6_promise_1.Promise(function (resolve, reject) {
-            wx.onSocketOpen(function (res) {
-                console.log('WebSocket connection has been opened!', res);
-                _that.sendMsg(reqObj, "DELETE");
-            });
-            _this.receiveMsg(resolve);
-            _this.handleError(reject);
-        });
-    };
-    /**
-     * update 方法
-     * @param reqObj   传入的请求对象
-     * @param token    传入的token【非必传参数】
-     * @returns {Promise}
-     */
-    WxResource.prototype.update = function (reqObj, token) {
-        var _this = this;
-        var _that = this;
-        return new es6_promise_1.Promise(function (resolve, reject) {
-            wx.onSocketOpen(function (res) {
-                console.log('WebSocket connection has been opened!', res);
-                _that.sendMsg(reqObj, "UPDATE");
-            });
-            _this.receiveMsg(resolve);
-            _this.handleError(reject);
-        });
-    };
-    /**
-     * 处理webSocket发送的信息
-     * @param reqObj
-     * @param method  请求方法 GET  POST ...
-     * @param token
-     */
-    WxResource.prototype.sendMsg = function (reqObj, method, token) {
-        // 判断是否传入token
-        var header = {};
-        if (token === undefined) {
-            console.log("no token");
-            header = {
-                "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6)
-            };
-        }
-        else if (token !== undefined) {
-            console.log("get token");
-            header = {
-                "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6),
-                "Authentication": "Bearer " + token
-            };
-        }
-        wx.sendSocketMessage({
-            data: JSON.stringify({
-                "method": method,
-                "url": reqObj.url,
-                "header": header,
-                "body": JSON.stringify(reqObj.data)
-            }),
-            success: function (res) {
-                console.log("发送成功", res);
-            },
-            fail: function (res) {
-                console.log("发送失败", res);
-            }
-        });
-    };
-    // 处理错误信息
-    WxResource.prototype.handleError = function (reject) {
-        wx.onSocketError(function (res) {
-            reject(res);
-            console.log(res, 'WebSocket连接打开失败，请检查！');
-        });
-    };
-    // 处理服务器返回内容
-    WxResource.prototype.receiveMsg = function (resolve) {
+    WxResource.prototype.afterConnect = function (resolve, reject) {
         wx.onSocketMessage(function (res) {
+            console.log("Get data from webSocket server：", JSON.parse(res.data));
             resolve(JSON.parse(res.data));
         });
+        return this;
+    };
+    //发送消息
+    WxResource.prototype.sendMsg = function (reqObj, method) {
+        var WxResource = this;
+        if (WxResource.socketOpen) {
+            var header = {};
+            var token = reqObj.token;
+            if (token === undefined) {
+                console.log("no token");
+                header = {
+                    "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6)
+                };
+            }
+            else if (token !== undefined) {
+                console.log("get token");
+                header = {
+                    "S-Request-Id": Date.now() + Math.random().toString(20).substr(2, 6),
+                    "Authentication": "Bearer " + token
+                };
+            }
+            wx.sendSocketMessage({
+                data: JSON.stringify({
+                    "method": method,
+                    "url": reqObj.url,
+                    "header": header,
+                    "body": JSON.stringify(reqObj.data)
+                }),
+                success: function (res) {
+                    console.log("Send data success: ", res);
+                },
+                fail: function (res) {
+                    console.log("Send data fail: ", res);
+                }
+            });
+        }
+        else {
+            console.log("websocket server not opened");
+        }
+    };
+    WxResource.prototype.get = function (url, token) {
+        var _this = this;
+        var _that = this;
+        var reqObj = this.handleParams(url, {}, token);
+        setTimeout(function () {
+            _this.sendMsg(reqObj, "GET");
+        }, 300);
+        return new es6_promise_1.Promise(function (resolve, reject) {
+            _that.afterConnect(resolve, reject);
+        });
+    };
+    WxResource.prototype.post = function (url, data) {
+        var _this = this;
+        var _that = this;
+        var reqObj = this.handleParams(url, data);
+        setTimeout(function () {
+            _this.sendMsg(reqObj, "POST");
+        }, 300);
+        return new es6_promise_1.Promise(function (resolve, reject) {
+            _that.afterConnect(resolve, reject);
+        });
+    };
+    WxResource.prototype.update = function (url, data) {
+        var _this = this;
+        var _that = this;
+        var reqObj = this.handleParams(url, data);
+        setTimeout(function () {
+            _this.sendMsg(reqObj, "UPDATE");
+        }, 300);
+        return new es6_promise_1.Promise(function (resolve, reject) {
+            _that.afterConnect(resolve, reject);
+        });
+    };
+    WxResource.prototype.delete = function (url, data) {
+        var _this = this;
+        var _that = this;
+        var reqObj = this.handleParams(url, data);
+        setTimeout(function () {
+            _this.sendMsg(reqObj, "DELETE");
+        }, 300);
+        return new es6_promise_1.Promise(function (resolve, reject) {
+            _that.afterConnect(resolve, reject);
+        });
+    };
+    WxResource.prototype.handleParams = function (url, data, token) {
+        var reqObj = {};
+        reqObj['url'] = url;
+        reqObj['data'] = data;
+        reqObj['token'] = token;
+        return reqObj;
     };
     return WxResource;
 }());
